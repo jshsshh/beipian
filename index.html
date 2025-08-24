@@ -1,38 +1,41 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>System Alert</title>
+    <title>数据上传</title>
     <style>
-        /* 这是页面的样式，用来营造“黑客”终端的氛围 */
         body, html {
             margin: 0;
             padding: 0;
             height: 100%;
-            background-color: #0d0d0d; /* 深黑色背景 */
-            color: #00ff41; /* 经典的绿色终端字体 */
-            font-family: 'Courier New', Courier, monospace; /* 等宽字体 */
+            background-color: #0d0d0d;
+            color: #00ff41;
+            font-family: 'Courier New', Courier, monospace;
             display: flex;
             justify-content: center;
             align-items: center;
-            text-align: center;
-            font-size: 1.2em;
         }
         .container {
-            padding: 20px;
+            width: 80%;
+            text-align: left;
+            font-size: 1.2em;
         }
-        .status {
-            color: #ff4757; /* 红色警告文字 */
-            font-weight: bold;
-            font-size: 1.5em;
-            margin-bottom: 20px;
+        .line {
+            margin-bottom: 15px;
+            /* 默认隐藏所有行 */
+            visibility: hidden; 
         }
-        /* 模仿打字光标的闪烁效果 */
+        .key {
+            color: #ff4757; /* 关键操作用红色 */
+        }
+        .success {
+            color: #2ed573; /* 成功状态用亮绿色 */
+        }
         .cursor {
             display: inline-block;
             width: 10px;
-            height: 1.5em;
+            height: 1.2em;
             background-color: #00ff41;
             animation: blink 1s step-end infinite;
         }
@@ -43,34 +46,49 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <p class="status" id="status-line">DATA COLLECTION COMPLETE <span class="cursor"></span></p>
-        <p>Your device information has been logged.</p>
-        <p>----------------------------------------</p>
-        <p><strong>IP Address:</strong> <span id="ip-address">Gathering...</span></p>
-        <p><strong>Location:</strong> <span id="location-info">Locating...</span></p>
-        <p>----------------------------------------</p>
-        <p>Please secure your network immediately.</p>
+    <div class="container" id="terminal">
+        <!-- 文本行会通过JavaScript动态添加到这里 -->
     </div>
 
     <script>
-        // 这段脚本会在页面加载后自动运行
-        window.onload = function() {
-            // 使用免费的 ip-api.com 服务来获取信息
-            fetch('https://ip-api.com/json')
-                .then(response => response.json())
-                .then(data => {
-                    // 获取成功后，将信息填入到页面的对应位置
-                    document.getElementById('ip-address').textContent = data.query;
-                    document.getElementById('location-info').textContent = `${data.country}, ${data.regionName}, ${data.city}`;
-                })
-                .catch(error => {
-                    // 如果获取失败，显示错误信息
-                    console.error('Error fetching IP data:', error);
-                    document.getElementById('ip-address').textContent = 'Access Denied';
-                    document.getElementById('location-info').textContent = 'Unavailable';
-                });
-        };
+        // !! 在这里定制你同学的名字 !!
+        const targetName = "王飞"; // <-- 把“张三”换成你同学的名字
+
+        // 这是要逐行显示的文本内容
+        const lines = [
+            `正在记录目标: <span class="key">${targetName}</span>...`,
+            `家庭住址已获取... <span class="success">成功</span>`,
+            `身份证号已获取... <span class="success">成功</span>`,
+            `正在存档...`,
+            `上传完毕。<span class="cursor"></span>`
+        ];
+
+        const terminal = document.getElementById('terminal');
+        let lineIndex = 0;
+
+        function typeLine() {
+            if (lineIndex < lines.length) {
+                // 创建一个新的 <p> 元素来显示一行
+                const p = document.createElement('p');
+                p.className = 'line';
+                p.innerHTML = lines[lineIndex];
+                terminal.appendChild(p);
+                
+                // 让这一行可见
+                setTimeout(() => {
+                    p.style.visibility = 'visible';
+                }, 50);
+
+                lineIndex++;
+                
+                // 设置一个随机的延迟来显示下一行，更有真实感
+                const delay = Math.random() * 1000 + 500; // 500ms到1500ms的随机延迟
+                setTimeout(typeLine, delay);
+            }
+        }
+
+        // 启动打字效果
+        typeLine();
     </script>
 </body>
 </html>
